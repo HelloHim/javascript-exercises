@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>palindromes</title>
+  <style>
+    body {
+      font-family: monospace;
+      max-width: 680px;
+      margin: 60px auto;
+      padding: 0 20px;
+      color: #222;
+      line-height: 1.7;
+    }
+    h1 { font-size: 1.2rem; }
+    code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; }
+    hr { border: none; border-top: 1px solid #ddd; margin: 36px 0; }
+
+    #results { margin-top: 24px; }
+    .test {
+      padding: 5px 0;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      gap: 12px;
+      font-size: 0.9rem;
+    }
+    .pass { color: green; }
+    .fail { color: red; }
+    .status { width: 16px; flex-shrink: 0; }
+    #summary { margin-top: 16px; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+  <h1>palindromes</h1>
+
+  <p>
+    Write a function <code>palindromes(str)</code> that returns <code>true</code> if the
+    string is a palindrome, <code>false</code> otherwise. Ignore punctuation, spaces, and case.
+    Numbers count as characters.
+  </p>
+
+  <hr>
+
+  <!-- Write your solution here -->
+  <script>
+  const palindromes = function (str) {
+    const cleanString = str.replace(/[\p{P}\p{S}\s]/gu, '');
+    strArr = cleanString.toLowerCase().split("");
+    return strArr.reduce((accumulator, item, index, array) => {
+        if (accumulator == false) return false;
+        if (item !== array.at(accumulator)) {
+            return false;
+        } else {
+            accumulator--
+            if (accumulator + array.length == -1) {
+                return true;
+            } else {
+                return accumulator
+            }
+        }
+    }, -1)
+};
+  </script>
+
+  <!-- Test runner — don't touch below this line -->
+  <script>
+    const tests = [
+      { input: 'racecar',                                          expected: true  },
+      { input: 'racecar!',                                         expected: true  },
+      { input: 'Racecar!',                                         expected: true  },
+      { input: 'A car, a man, a maraca.',                          expected: true  },
+      { input: 'Animal loots foliated detail of stool lamina.',    expected: true  },
+      { input: 'ZZZZ car, a man, a maracaz.',                      expected: false },
+      { input: 'rac3e3car',                                        expected: true  },
+      { input: 'r3ace3car',                                        expected: false },
+    ];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('results');
+      let passed = 0;
+
+      tests.forEach(({ input, expected }) => {
+        let result, error;
+        try {
+          result = palindromes(input);
+        } catch (e) {
+          error = e.message;
+        }
+
+        const ok = result === expected;
+        if (ok) passed++;
+
+        const row = document.createElement('div');
+        row.className = 'test ' + (ok ? 'pass' : 'fail');
+        row.innerHTML = `
+          <span class="status">${ok ? '✓' : '✗'}</span>
+          <span>
+            <code>'${input}'</code>
+            &rarr; expected <code>${expected}</code>
+            ${error ? `<em>error: ${error}</em>` : !ok ? `got <code>${result}</code>` : ''}
+          </span>
+        `;
+        container.appendChild(row);
+      });
+
+      const summary = document.getElementById('summary');
+      summary.textContent = `${passed} / ${tests.length} passing`;
+      summary.style.color = passed === tests.length ? 'green' : 'red';
+    });
+  </script>
+
+  <div id="results"></div>
+  <div id="summary"></div>
+
+</body>
+</html>
