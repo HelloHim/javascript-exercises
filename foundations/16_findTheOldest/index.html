@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Exercise 16 - Find the Oldest</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: monospace; max-width: 800px; margin: 40px auto; padding: 0 20px; background: #111; color: #ccc; }
+    h1 { color: #fff; font-size: 1.2em; }
+    .description { background: #1e1e1e; border-left: 3px solid #555; padding: 12px 16px; margin-bottom: 24px; line-height: 1.6; }
+    .description ul { margin: 8px 0; padding-left: 20px; }
+    textarea { display: none; }
+    #solution-label { color: #aaa; font-size: 0.9em; margin-bottom: 6px; }
+    #results { margin-top: 24px; }
+    .test { padding: 8px 12px; margin: 4px 0; border-radius: 3px; font-size: 0.9em; }
+    .pass { background: #1a3a1a; color: #6f6; border-left: 3px solid #4c4; }
+    .fail { background: #3a1a1a; color: #f66; border-left: 3px solid #c44; }
+    .skip { background: #2a2a1a; color: #aa8; border-left: 3px solid #886; }
+    #summary { margin-top: 16px; padding: 10px 14px; background: #1e1e1e; border-radius: 3px; font-size: 0.95em; }
+    .label { color: #888; font-size: 0.8em; display: block; margin-bottom: 4px; }
+  </style>
+</head>
+<body>
+
+  <h1>Exercise 16 — Find the Oldest</h1>
+
+  <div class="description">
+    Given an array of objects representing people with a birth and (optional) death year,
+    return the <strong>oldest person object</strong>.
+    <ul>
+      <li>Return the whole person object (tests check <code>.name</code>).</li>
+      <li>If <code>yearOfDeath</code> is missing, use the current year to calculate age.</li>
+      <li>Try using <code>reduce</code>, or chaining array methods.</li>
+    </ul>
+  </div>
+
+  <span class="label">// write your solution below — edit only the function body</span>
+
+  <script id="solution">
+// ─── YOUR SOLUTION ───────────────────────────────────────────────────────────
+const findTheOldest = function(arr) {
+    const currentYear = new Date().getFullYear();
+    oldestAge = arr.reduce((accumulator, item, index, array) => {
+        if (item.yearOfDeath == undefined) {
+            console.log(item.yearOfDeath);
+            item.yearOfDeath = currentYear;
+            console.log(item.yearOfDeath);
+        }
+        let age = item.yearOfDeath - item.yearOfBirth;
+        if (age > accumulator) {
+            accumulator = age;
+        }
+        return accumulator;
+    }, 0)
+
+    oldestPersonIndex = arr.findIndex((item, index, array) => {
+        if (item.yearOfDeath - item.yearOfBirth == oldestAge) {
+            return true;
+        } else return false;
+    })
+
+    return arr[oldestPersonIndex];
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+  </script>
+
+  <div id="results"></div>
+  <div id="summary"></div>
+
+  <script>
+    // ── Test runner ──────────────────────────────────────────────────────────
+
+    const tests = [
+      {
+        description: 'finds the person with the greatest age!',
+        skip: false,
+        run() {
+          const people = [
+            { name: "Carly", yearOfBirth: 1942, yearOfDeath: 1970 },
+            { name: "Ray",   yearOfBirth: 1962, yearOfDeath: 2011 },
+            { name: "Jane",  yearOfBirth: 1912, yearOfDeath: 1941 },
+          ];
+          const result = findTheOldest(people);
+          if (!result || result.name !== 'Ray')
+            throw new Error(`Expected "Ray" but got ${result ? '"' + result.name + '"' : result}`);
+        }
+      },
+      {
+        description: 'finds the oldest person if yearOfDeath is undefined on a NON-oldest person',
+        skip: false,
+        run() {
+          const people = [
+            { name: "Carly", yearOfBirth: 2018 },
+            { name: "Ray",   yearOfBirth: 1962, yearOfDeath: 2011 },
+            { name: "Jane",  yearOfBirth: 1912, yearOfDeath: 1941 },
+          ];
+          const result = findTheOldest(people);
+          if (!result || result.name !== 'Ray')
+            throw new Error(`Expected "Ray" but got ${result ? '"' + result.name + '"' : result}`);
+        }
+      },
+      {
+        description: 'finds the oldest person if yearOfDeath is undefined for the OLDEST person',
+        skip: false,
+        run() {
+          const people = [
+            { name: "Carly", yearOfBirth: 1066 },
+            { name: "Ray",   yearOfBirth: 1962, yearOfDeath: 2011 },
+            { name: "Jane",  yearOfBirth: 1912, yearOfDeath: 1941 },
+          ];
+          const result = findTheOldest(people);
+          if (!result || result.name !== 'Carly')
+            throw new Error(`Expected "Carly" but got ${result ? '"' + result.name + '"' : result}`);
+        }
+      },
+    ];
+
+    // ── Runner ───────────────────────────────────────────────────────────────
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const resultsEl = document.getElementById('results');
+      const summaryEl = document.getElementById('summary');
+
+      let passed = 0, failed = 0, skipped = 0;
+
+      tests.forEach(({ description, skip, run }) => {
+        const div = document.createElement('div');
+        div.classList.add('test');
+
+        if (skip) {
+          div.classList.add('skip');
+          div.textContent = `⊘ SKIP  — ${description}`;
+          skipped++;
+        } else {
+          try {
+            run();
+            div.classList.add('pass');
+            div.textContent = `✓ PASS  — ${description}`;
+            passed++;
+          } catch (err) {
+            div.classList.add('fail');
+            div.textContent = `✗ FAIL  — ${description}\n         ${err.message}`;
+            div.style.whiteSpace = 'pre';
+            failed++;
+          }
+        }
+
+        resultsEl.appendChild(div);
+      });
+
+      summaryEl.innerHTML =
+        `<span style="color:#6f6">✓ ${passed} passed</span>  ` +
+        `<span style="color:#f66">✗ ${failed} failed</span>  ` +
+        `<span style="color:#aa8">⊘ ${skipped} skipped</span>  ` +
+        `<span style="color:#888">— ${passed + failed + skipped} total</span>`;
+    });
+  </script>
+
+</body>
+</html>
